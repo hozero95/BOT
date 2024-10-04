@@ -1,8 +1,11 @@
-package com.example.bot.core.jwt;
+package com.example.bot.core.security.filter;
 
-import com.example.bot.core.config.CustomUserDetails;
-import com.example.bot.biz.dto.ResponseResult;
 import com.example.bot.biz.entity.User;
+import com.example.bot.core.config.RequestMatcherHolder;
+import com.example.bot.core.config.ResponseResult;
+import com.example.bot.core.security.util.CustomUserDetails;
+import com.example.bot.core.security.util.JwtUtil;
+import com.example.bot.core.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -10,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -47,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 토큰 만료 시간 검증
         try {
-            jwtUtil.isExpired(token);
+            jwtUtil.isExpired(token, request, response, filterChain);
         } catch (ExpiredJwtException e) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -79,12 +84,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     /**
      * 특정 URL 들을 OncePerRequestFilter 를 거치지 않게 하는 메소드
-     * @param request
+     *
+     * @param request p1
      * @return boolean
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String[] excludePath = {"/login", "/api/test", "/api/auth"};
+        RequestMatcherHolder requestMatcherHolder = new RequestMatcherHolder();
+        String[] excludePath = StringUtils.stringListRemoveSuffix(requestMatcherHolder.getPERMIT_ALL_URLS(), "**").toArray(new String[0]);
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }

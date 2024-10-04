@@ -1,1 +1,35 @@
-spring.application.name=BOT
+spring:
+  application:
+    name: BOT
+
+  # DataSource Setting
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bo_template?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: "!1q2w3e4r"
+
+  # JPA Setting
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+
+  # JWT
+  jwt:
+    secret: dkssudgktpdywjsmsrlaghduddlqslekwjsms95sustoddlqslekwkfqnxkremflrpTtmqslek
+
+# SQL Logging
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace

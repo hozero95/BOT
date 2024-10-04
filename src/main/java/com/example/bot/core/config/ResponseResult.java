@@ -1,6 +1,8 @@
-package com.example.bot.biz.dto;
+package com.example.bot.core.config;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -13,10 +15,11 @@ public class ResponseResult<D> {
 
     /**
      * HTTP 통신 성공
-     * @param message
-     * @param data
+     *
+     * @param message p1
+     * @param data    p2
+     * @param <D>     p3
      * @return ResponseResult<D>
-     * @param <D>
      */
     public static <D> ResponseResult<D> ofSuccess(String message, D data) {
         return new ResponseResult<>(HttpStatus.OK, message == null ? "success" : message, data);
@@ -24,10 +27,11 @@ public class ResponseResult<D> {
 
     /**
      * HTTP 통신 실패
-     * @param status
-     * @param message
-     * @return
-     * @param <D>
+     *
+     * @param status  p1
+     * @param message p2
+     * @param <D>     p3
+     * @return ResponseResult<D>
      */
     public static <D> ResponseResult<D> ofFailure(HttpStatus status, String message) {
         return new ResponseResult<>(status == null ? HttpStatus.BAD_REQUEST : status, message == null ? "failure" : message, null);

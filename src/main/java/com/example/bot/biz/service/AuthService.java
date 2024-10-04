@@ -1,8 +1,8 @@
-package com.example.bot.service;
+package com.example.bot.biz.service;
 
-import com.example.bot.dto.JoinDTO;
-import com.example.bot.entity.User;
-import com.example.bot.repository.UserRepository;
+import com.example.bot.biz.dto.JoinDTO;
+import com.example.bot.biz.entity.User;
+import com.example.bot.biz.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.example.bot.dto;
+package com.example.bot.biz.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

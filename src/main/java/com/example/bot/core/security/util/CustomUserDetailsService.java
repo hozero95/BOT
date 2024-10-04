@@ -1,6 +1,5 @@
-package com.example.bot.biz.service;
+package com.example.bot.core.security.util;
 
-import com.example.bot.core.security.util.CustomUserDetails;
 import com.example.bot.biz.entity.User;
 import com.example.bot.biz.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;

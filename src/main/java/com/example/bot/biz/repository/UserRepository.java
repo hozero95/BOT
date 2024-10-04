@@ -1,6 +1,6 @@
-package com.example.bot.repository;
+package com.example.bot.biz.repository;
 
-import com.example.bot.entity.User;
+import com.example.bot.biz.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

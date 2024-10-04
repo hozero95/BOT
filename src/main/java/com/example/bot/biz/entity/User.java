@@ -1,4 +1,4 @@
-package com.example.bot.entity;
+package com.example.bot.biz.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,8 +1,8 @@
-package com.example.bot.controller;
+package com.example.bot.biz.controller;
 
-import com.example.bot.dto.JoinDTO;
-import com.example.bot.dto.ResponseResult;
-import com.example.bot.service.AuthService;
+import com.example.bot.biz.dto.JoinDTO;
+import com.example.bot.biz.service.AuthService;
+import com.example.bot.core.config.ResponseResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +20,8 @@ public class AuthController {
 
     /**
      * 회원 가입
-     * @param joinDTO
+     *
+     * @param joinDTO p1
      * @return ResponseResult<Object>
      */
     @PostMapping("/signup")
