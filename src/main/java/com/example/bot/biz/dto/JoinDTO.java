@@ -3,6 +3,9 @@ package com.example.bot.biz.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+/**
+ * 회원 가입 DTO
+ */
 @Getter
 @Setter
 @AllArgsConstructor

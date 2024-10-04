@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test-auth")
 public class TestAuthController {
     @GetMapping("/")
-    public ResponseResult<Object> test() {
+    public ResponseResult<?> test() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String userName = authentication.getName(); // 현재 세션의 사용자 아이디 => 이 프로젝트에서는 이메일
         String role = authentication.getAuthorities().iterator().next().getAuthority(); // 현재 세션의 사용자 권한
 
-        return ResponseResult.ofSuccess("테스트 성공", "userName: " + userName + ", role: " + role);
+        return ResponseResult.ofSuccess("success", "userName: " + userName + ", role: " + role);
     }
 }

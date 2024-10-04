@@ -5,6 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * Custom Response
+ *
+ * @param <D>
+ */
 @Getter
 @Setter
 @RequiredArgsConstructor(staticName = "of")

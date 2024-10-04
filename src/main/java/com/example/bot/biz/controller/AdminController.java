@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 public class AdminController {
     @GetMapping("/")
-    public ResponseResult<Object> admin() {
-        return ResponseResult.ofSuccess("어드민 접근 성공", null);
+    public ResponseResult<?> admin() {
+        return ResponseResult.ofSuccess("success", null);
     }
 }

@@ -24,10 +24,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * Login Filter
+ */
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
@@ -79,6 +83,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      */
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authentication) throws IOException {
+        // 유저 정보 조회
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -87,12 +92,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String username = customUserDetails.getUsername();
         String role = auth.getAuthority();
-        String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
 
+        // 토큰 생성
+        String accessToken = jwtUtil.createJwt("Access-Token", username, role, JwtUtil.ACCESS_TOKEN_EXPIRE);
+        String refreshToken = jwtUtil.createJwt("Refresh-Token", username, role, JwtUtil.REFRESH_TOKEN_EXPIRE);
+
+        // Refresh Token 저장
+        jwtUtil.addRefreshToken(username, refreshToken, JwtUtil.REFRESH_TOKEN_EXPIRE);
+
+        // 응답 설정
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
-        res.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofSuccess("로그인 성공", token)).getBytes());
-        res.addHeader("Authorization", "Bearer " + token);
+        res.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofSuccess("로그인 성공", null)).getBytes());
+        res.setHeader("Access-Token", accessToken);
+        res.addCookie(jwtUtil.createCookie(refreshToken));
+        res.setStatus(HttpStatus.OK.value());
 
         log.debug("로그인 성공: {} {}", username, role);
     }

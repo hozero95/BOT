@@ -23,6 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * JWT Filter
+ */
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
@@ -32,39 +35,55 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * JwtFilter 에서 실행되는 메소드
+     *
+     * @param request     p1
+     * @param response    p2
+     * @param filterChain p3
+     * @throws ServletException e1
+     * @throws IOException      e2
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        // request 에서 Authorization 헤더를 찾음
-        String authorization = request.getHeader("Authorization");
+        // header 에서 access 토큰 조회
+        String accessToken = request.getHeader("Access-Token");
 
-        // Authorization 헤더 검증
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        // 토큰 유무 검증
+        if (accessToken == null) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.")).getBytes());
+            response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "access token is empty")).getBytes());
             response.setStatus(401);
-            filterChain.doFilter(request, response);
-            return; // 조건에 해당하면 메소드 종료 (필수)
+//            filterChain.doFilter(request, response); // 다음 필터 진행
+            return;
         }
 
-        // Bearer 부분 제거
-        String token = authorization.substring("Bearer ".length());
-
-        // 토큰 만료 시간 검증
+        // 토큰 만료 검증 => 다음 필터 진행하지 않음
         try {
-            jwtUtil.isExpired(token, request, response, filterChain);
+            jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.")).getBytes());
+            response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "access token is expired")).getBytes());
             response.setStatus(401);
-            filterChain.doFilter(request, response);
-            return; // 조건에 해당하면 메소드 종료 (필수)
+            return;
+        }
+
+        // Access Token 맞는지 확인
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("Access-Token")) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "access token is invalid")).getBytes());
+            response.setStatus(401);
+            return;
         }
 
         // 토큰에서 username, role 획득
-        String username = jwtUtil.getUsername(token);
-        String role = jwtUtil.getRole(token);
+        String username = jwtUtil.getUsername(accessToken);
+        String role = jwtUtil.getRole(accessToken);
 
         // User 객체 생성
         User user = new User();
@@ -83,7 +102,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 특정 URL 들을 OncePerRequestFilter 를 거치지 않게 하는 메소드
+     * 특정 URL 들을 JwtFiler 를 거치지 않게 하는 메소드
      *
      * @param request p1
      * @return boolean

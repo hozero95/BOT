@@ -3,7 +3,10 @@ package com.example.bot.core.util;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StringUtils {
+/**
+ * Custom StringUtils
+ */
+public class StringUtils extends org.springframework.util.StringUtils {
     /**
      * 문자열 리스트에서 suffix 문자 제거 메소드
      *

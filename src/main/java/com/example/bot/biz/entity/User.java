@@ -3,6 +3,9 @@ package com.example.bot.biz.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * User Entity
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +16,7 @@ public final class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long userId;  // 유저아이디
+    private Long userId;  // 유저 ID
 
     @Column(name = "email")
     private String email; // 이메일

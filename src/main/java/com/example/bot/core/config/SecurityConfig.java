@@ -1,7 +1,9 @@
 package com.example.bot.core.config;
 
+import com.example.bot.biz.repository.RefreshRepository;
 import com.example.bot.core.security.filter.JwtFilter;
 import com.example.bot.core.security.filter.LoginFilter;
+import com.example.bot.core.security.filter.LogoutFilter;
 import com.example.bot.core.security.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +20,20 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Collections;
 
+/**
+ * Security Config
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil, RefreshRepository refreshRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
 
     /**
@@ -101,6 +108,7 @@ public class SecurityConfig {
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
         // JwtFilter 가 LoginFilter 뒤에서 필터링되도록 설정 => 특정 케이스에서 Login Filter 보다 JWT Filter 가 먼저 실행될 때 발생하는 오류가 있음
         http.addFilterAfter(new JwtFilter(jwtUtil), LoginFilter.class);
+        http.addFilterBefore(new LogoutFilter(jwtUtil, refreshRepository), org.springframework.security.web.authentication.logout.LogoutFilter.class);
 
         // 6. 세션 설정
         // Session Stateless 설정

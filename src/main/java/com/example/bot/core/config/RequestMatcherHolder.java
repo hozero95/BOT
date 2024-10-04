@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * 페이지별 권한 설정
+ */
 @Getter
 @Setter
 public class RequestMatcherHolder {

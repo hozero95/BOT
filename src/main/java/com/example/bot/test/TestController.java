@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test")
 public class TestController {
     @GetMapping("/")
-    public ResponseResult<Object> test() {
-        return ResponseResult.ofSuccess("테스트 성공", null);
+    public ResponseResult<?> test() {
+        return ResponseResult.ofSuccess("success", null);
     }
 }
