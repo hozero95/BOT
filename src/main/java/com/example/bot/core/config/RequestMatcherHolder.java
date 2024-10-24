@@ -13,8 +13,11 @@ import java.util.List;
 public class RequestMatcherHolder {
     private final List<String> PERMIT_ALL_URLS = List.of(
             "/login",
-            "/api/test/**",
-            "/api/auth/**"
+            "/api/test/**"
+    );
+    private final List<String> PERMIT_USER_URLS = List.of(
+            "/api/auth/**",
+            "/api/order/**"
     );
     private final List<String> PERMIT_ADMIN_URLS = List.of(
             "/api/admin/**"

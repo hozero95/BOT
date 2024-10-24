@@ -7,7 +7,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +14,6 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final JwtUtil jwtUtil;
     private final RefreshRepository refreshRepository;
-
-    @Value("${spring.init.password}")
-    private String password;
 
     public AuthService(JwtUtil jwtUtil, RefreshRepository refreshRepository) {
         this.jwtUtil = jwtUtil;
