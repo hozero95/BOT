@@ -1,3 +1,7 @@
+#file: noinspection SpringBootApplicationYaml,SpellCheckingInspection
+server:
+  address: 127.0.0.1
+
 spring:
   application:
     name: BOT
@@ -5,7 +9,7 @@ spring:
   # DataSource Setting
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bo_template?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/shared_one?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: "!1q2w3e4r"
 
@@ -24,6 +28,10 @@ spring:
   # JWT
   jwt:
     secret: dkssudgktpdywjsmsrlaghduddlqslekwjsms95sustoddlqslekwkfqnxkremflrpTtmqslek
+
+  # Init Password
+  init:
+    password: erpit1234
 
 # SQL Logging
 logging:

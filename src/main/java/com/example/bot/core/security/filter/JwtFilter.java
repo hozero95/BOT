@@ -1,6 +1,7 @@
 package com.example.bot.core.security.filter;
 
 import com.example.bot.biz.entity.User;
+import com.example.bot.biz.repository.AuthRepository;
 import com.example.bot.core.config.RequestMatcherHolder;
 import com.example.bot.core.config.ResponseResult;
 import com.example.bot.core.security.util.CustomUserDetails;
@@ -30,9 +31,11 @@ import java.util.Arrays;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuthRepository authRepository;
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, AuthRepository authRepository) {
         this.jwtUtil = jwtUtil;
+        this.authRepository = authRepository;
     }
 
     /**
@@ -83,16 +86,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 토큰에서 username, role 획득
         String username = jwtUtil.getUsername(accessToken);
-        String role = jwtUtil.getRole(accessToken);
+//        String role = jwtUtil.getRole(accessToken);
 
         // User 객체 생성
         User user = new User();
-        user.setEmail(username);
+        user.setUsercd(username);
         user.setPassword("temporary"); // 임시 암호 발급
-        user.setRole(role);
 
         // UserDetails 회원 정보 객체 담기
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        CustomUserDetails customUserDetails = new CustomUserDetails(user, authRepository);
         // Spring Security 인증 토큰 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         // 세션에 사용자 등록

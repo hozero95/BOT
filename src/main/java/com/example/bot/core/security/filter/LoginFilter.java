@@ -27,6 +27,7 @@ import java.util.Iterator;
 /**
  * Login Filter
  */
+@SuppressWarnings({"SpellCheckingInspection"})
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
@@ -60,14 +61,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             throw new RuntimeException(e);
         }
 
-        // 클라이언트 요청에서 username(email), password 추출
-        String email = loginDTO.getEmail();
+        // 클라이언트 요청에서 usercd, password 추출
+        String usercd = loginDTO.getUsercd();
         String password = loginDTO.getPassword();
 
-        log.debug("로그인 시도: {} {}", email, password);
+        log.debug("로그인 시도: {} {}", usercd, password);
 
         // Spring Security 에서 username 과 password 를 검증하기 위해서는 token 에 담아야 함
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password, null);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usercd, password, null);
 
         // token 에 담은 검증을 위한 AuthenticationManager 로 전달
         return authenticationManager.authenticate(authenticationToken);

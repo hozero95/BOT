@@ -1,16 +1,14 @@
 package com.example.bot.biz.repository;
 
-import com.example.bot.biz.entity.User;
+import com.example.bot.biz.entity.Auth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * User Repository
+ * Auth Repository
  */
 @SuppressWarnings("SpellCheckingInspection")
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Boolean existsByUsercd(String usercd);
-
-    User findByUsercd(String usercd);
+public interface AuthRepository extends JpaRepository<Auth, Long> {
+    Auth findByUsercd(String usercd);
 }

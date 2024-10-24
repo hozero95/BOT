@@ -2,10 +2,14 @@ package com.example.bot.biz.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * 회원 가입 DTO
  */
+@SuppressWarnings("SpellCheckingInspection")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,11 +17,8 @@ import lombok.*;
 @Builder
 public class JoinDTO {
     @NotNull
-    private String email;
+    private String usernm;
 
     @NotNull
-    private String password;
-
-    @NotNull
-    private String name;
+    private String birthdate;
 }

@@ -1,6 +1,8 @@
 package com.example.bot.core.security.util;
 
+import com.example.bot.biz.entity.Auth;
 import com.example.bot.biz.entity.User;
+import com.example.bot.biz.repository.AuthRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,11 +12,14 @@ import java.util.Collection;
 /**
  * Security Custom UserDetails
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class CustomUserDetails implements UserDetails {
     private final User user;
+    private final AuthRepository authRepository;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, AuthRepository authRepository) {
         this.user = user;
+        this.authRepository = authRepository;
     }
 
     /**
@@ -25,8 +30,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
+        Auth auth = authRepository.findByUsercd(user.getUsercd());
 
-        authorities.add((GrantedAuthority) user::getRole);
+        authorities.add((GrantedAuthority) auth::getAuth);
 
         return authorities;
     }
@@ -42,13 +48,13 @@ public class CustomUserDetails implements UserDetails {
     }
 
     /**
-     * 사용자의 이름을 반환 => 이 프로젝트에서는 이메일
+     * 사용자의 이름을 반환 => 이 프로젝트에서는 usercd
      *
      * @return String
      */
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getUsercd();
     }
 
     /**

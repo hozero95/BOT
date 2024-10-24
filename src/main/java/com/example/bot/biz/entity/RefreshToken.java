@@ -8,27 +8,28 @@ import java.time.LocalDateTime;
 /**
  * Refresh Token Entity
  */
+@SuppressWarnings({"JpaDataSourceORMInspection", "SpellCheckingInspection"})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = "t_refresh_token")
+@Entity(name = "refresh_token")
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refresh_token_id")
     private Long refreshTokenId; // 리프레시토큰 ID
 
-    @Column(name = "email")
-    private String email; // 이메일
+    @Column(name = "usercd")
+    private String usercd; // 회원코드
 
     @Column(name = "token")
     private String token; // 토큰
 
-    @Column(name = "expired_dt")
-    private LocalDateTime expiredDt; // 만료일
+    @Column(name = "expireddate")
+    private LocalDateTime expireddate; // 만료일
 
-    @Column(name = "create_dt")
-    private LocalDateTime createDt; // 생성일
+    @Column(name = "createdate")
+    private LocalDateTime createdate; // 생성일
 }

@@ -17,6 +17,7 @@ import java.util.Date;
 /**
  * Jwt Util
  */
+@SuppressWarnings({"SpellCheckingInspection", "CommentedOutCode"})
 @Slf4j
 @Component
 public class JwtUtil {
@@ -32,7 +33,7 @@ public class JwtUtil {
     }
 
     /**
-     * Token 내부 Username 검증하는 메소드 => 이 프로젝트에서는 Email
+     * Token 내부 Username 검증하는 메소드 => 이 프로젝트에서는 usercd
      *
      * @param token p1
      * @return String
@@ -108,18 +109,18 @@ public class JwtUtil {
     /**
      * Refresh Token 저장
      *
-     * @param email     p1
+     * @param usercd     p1
      * @param token     p2
      * @param expiredMs p3
      */
-    public void addRefreshToken(String email, String token, Long expiredMs) {
+    public void addRefreshToken(String usercd, String token, Long expiredMs) {
         LocalDateTime now = LocalDateTime.now();
 
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setEmail(email);
+        refreshToken.setUsercd(usercd);
         refreshToken.setToken(token);
-        refreshToken.setCreateDt(now);
-        refreshToken.setExpiredDt(now.plusSeconds(expiredMs / 1000));
+        refreshToken.setCreatedate(now);
+        refreshToken.setExpireddate(now.plusSeconds(expiredMs / 1000));
 
         refreshRepository.save(refreshToken);
     }

@@ -1,55 +1,27 @@
 package com.example.bot.biz.service;
 
-import com.example.bot.biz.dto.JoinDTO;
-import com.example.bot.biz.entity.User;
 import com.example.bot.biz.repository.RefreshRepository;
-import com.example.bot.biz.repository.UserRepository;
 import com.example.bot.core.config.ResponseResult;
 import com.example.bot.core.security.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, RefreshRepository refreshRepository) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    @Value("${spring.init.password}")
+    private String password;
+
+    public AuthService(JwtUtil jwtUtil, RefreshRepository refreshRepository) {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
-    }
-
-    /**
-     * 회원 가입
-     *
-     * @param joinDTO p1
-     */
-    public void signup(JoinDTO joinDTO) {
-        String email = joinDTO.getEmail();
-        String password = joinDTO.getPassword();
-
-        Boolean isExist = userRepository.existsByEmail(email);
-
-        if (isExist) {
-            return;
-        }
-
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(bCryptPasswordEncoder.encode(password));
-        user.setName(joinDTO.getName());
-        user.setRole("ROLE_ADMIN");
-
-        userRepository.save(user);
     }
 
     /**
