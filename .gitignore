@@ -1,3 +1,7 @@
+# Custom Ignore
+*application.yml
+
+# Basic Ignore
 HELP.md
 .gradle
 build/

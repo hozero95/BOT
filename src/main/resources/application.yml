@@ -9,9 +9,9 @@ spring:
   # DataSource Setting
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/shared_one?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: "!1q2w3e4r"
+    url:
+    username:
+    password:
 
   # JPA Setting
   jpa:
@@ -27,11 +27,11 @@ spring:
 
   # JWT
   jwt:
-    secret: dldkfvlfmfaksemfdjqhwkdhkwjdakftlssksekwkfgoTdmauswhgrpTrnsk
+    secret:
 
   # Init Password
   init:
-    password: erpit1234
+    password:
 
 # SQL Logging
 logging:

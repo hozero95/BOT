@@ -102,6 +102,9 @@ public class SecurityConfig {
                         requestMatcherHolder.getPERMIT_ALL_URLS().toArray(new String[0])
                 ).permitAll()
                 .requestMatchers(
+                        requestMatcherHolder.getPERMIT_USER_URLS().toArray(new String[0])
+                ).hasAnyRole("USER", "ADMIN")
+                .requestMatchers(
                         requestMatcherHolder.getPERMIT_ADMIN_URLS().toArray(new String[0])
                 ).hasRole("ADMIN")
                 .anyRequest().authenticated());
