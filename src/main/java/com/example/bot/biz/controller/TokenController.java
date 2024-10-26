@@ -1,7 +1,9 @@
 package com.example.bot.biz.controller;
 
-import com.example.bot.biz.service.AuthService;
+import com.example.bot.biz.service.TokenService;
 import com.example.bot.core.config.ResponseResult;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,12 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-    private final AuthService authService;
+@RequestMapping("/api/token")
+@Tag(name = "Token API", description = "Token 관련 API")
+public class TokenController {
+    private final TokenService tokenService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public TokenController(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
 
     /**
@@ -24,8 +27,9 @@ public class AuthController {
      * @param response p2
      * @return ResponseResult<?>
      */
+    @Operation(summary = "Access Token 재발급")
     @PostMapping("/reissue")
     public ResponseResult<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        return authService.reissue(request, response);
+        return tokenService.reissue(request, response);
     }
 }

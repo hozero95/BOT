@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public final class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "userid")
     private Long id;  // 사원ID
 
     @Column(name = "password")

@@ -11,11 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthService {
+public class TokenService {
     private final JwtUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-    public AuthService(JwtUtil jwtUtil, RefreshRepository refreshRepository) {
+    public TokenService(JwtUtil jwtUtil, RefreshRepository refreshRepository) {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
     }

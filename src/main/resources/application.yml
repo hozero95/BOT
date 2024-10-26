@@ -27,7 +27,7 @@ spring:
 
   # JWT
   jwt:
-    secret: dkssudgktpdywjsmsrlaghduddlqslekwjsms95sustoddlqslekwkfqnxkremflrpTtmqslek
+    secret: dldkfvlfmfaksemfdjqhwkdhkwjdakftlssksekwkfgoTdmauswhgrpTrnsk
 
   # Init Password
   init:

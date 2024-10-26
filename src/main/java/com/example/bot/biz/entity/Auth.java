@@ -17,8 +17,8 @@ import lombok.*;
 public class Auth extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;  // 권한ID
+    @Column(name = "authid")
+    private Long authid;  // 권한ID
 
     @Column(name = "usercd")
     private String usercd;  // 사원코드
