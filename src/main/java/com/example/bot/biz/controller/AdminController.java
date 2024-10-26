@@ -1,6 +1,7 @@
 package com.example.bot.biz.controller;
 
-import com.example.bot.biz.dto.JoinDTO;
+import com.example.bot.biz.dto.admin.ResetPasswordDTO;
+import com.example.bot.biz.dto.admin.SignupDTO;
 import com.example.bot.biz.service.AdminService;
 import com.example.bot.core.config.ResponseResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,14 +25,26 @@ public class AdminController {
     /**
      * 유저 생성
      *
-     * @param joinDTO p1
+     * @param signupDTO p1
      * @return ResponseResult<?>
      */
     @Operation(summary = "유저 생성")
     @PostMapping("/signup")
-    public ResponseResult<?> signup(@Valid @RequestBody JoinDTO joinDTO) {
-        adminService.signup(joinDTO);
+    public ResponseResult<?> signup(@Valid @RequestBody SignupDTO.Request signupDTO) {
+        adminService.signup(signupDTO);
 
+        return ResponseResult.ofSuccess("success", null);
+    }
+
+    /**
+     * 비밀번호 초기화
+     *
+     * @param resetPasswordDTO p1
+     * @return ResponseResult<?>
+     */
+    @Operation(summary = "비밀번호 초기화")
+    @PostMapping("/reset-password")
+    public ResponseResult<?> resetPassword(@Valid @RequestBody ResetPasswordDTO.Request resetPasswordDTO) {
         return ResponseResult.ofSuccess("success", null);
     }
 }

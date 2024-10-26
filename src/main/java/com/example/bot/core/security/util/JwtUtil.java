@@ -4,6 +4,7 @@ import com.example.bot.biz.entity.RefreshToken;
 import com.example.bot.biz.repository.RefreshRepository;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class JwtUtil {
     private final RefreshRepository refreshRepository;
 
     private final SecretKey secretKey;
-    public static final Long ACCESS_TOKEN_EXPIRE = 60 * 10 * 1000L; // Access Token Expired: 10분
+    public static final Long ACCESS_TOKEN_EXPIRE = 60 * 30 * 1000L; // Access Token Expired: 60분(30분)
     public static final Long REFRESH_TOKEN_EXPIRE = 60 * 1440 * 1000L; // Refresh Token Expired: 1440분(24시간)
 
     public JwtUtil(RefreshRepository refreshRepository, @Value("${spring.jwt.secret}") String secretKey) {
@@ -67,8 +68,8 @@ public class JwtUtil {
      *
      * @param token p1
      */
-    public void isExpired(String token) {
-        Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
+    public Date isExpired(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
     }
 
     /**
@@ -94,12 +95,12 @@ public class JwtUtil {
     /**
      * Refresh Token 을 담을 쿠키 생성 메소드
      *
-     * @param value p2
+     * @param value p1
      * @return Cookie
      */
-    public Cookie createCookie(String value) {
+    public Cookie createRefreshCookie(String value) {
         Cookie cookie = new Cookie("Refresh-Token", value);
-        cookie.setMaxAge(Math.toIntExact(JwtUtil.REFRESH_TOKEN_EXPIRE)); // 60분
+        cookie.setMaxAge(Math.toIntExact(JwtUtil.REFRESH_TOKEN_EXPIRE)); // 24시간
 //        cookie.setSecure(true); // HTTPS 통신 시 활성화
 //        cookie.setPath("/"); // 쿠키가 적용될 범위
         cookie.setHttpOnly(true); // 클라이언트에서 JavaScript 코드를 통한 Cookie 접근 제한
@@ -109,7 +110,7 @@ public class JwtUtil {
     /**
      * Refresh Token 저장
      *
-     * @param usercd     p1
+     * @param usercd    p1
      * @param token     p2
      * @param expiredMs p3
      */
@@ -123,5 +124,22 @@ public class JwtUtil {
         refreshToken.setExpireddate(now.plusSeconds(expiredMs / 1000));
 
         refreshRepository.save(refreshToken);
+    }
+
+    /**
+     * 쿠키로부터 Refresh 토큰을 추출하는 메소드
+     *
+     * @param request p1
+     * @return String
+     */
+    public String getRefreshTokenByCookie(HttpServletRequest request) {
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("Refresh-Token")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+        return refreshToken;
     }
 }

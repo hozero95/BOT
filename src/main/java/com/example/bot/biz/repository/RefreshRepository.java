@@ -8,9 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Refresh Repository
  */
+@SuppressWarnings("SpellCheckingInspection")
 @Repository
 public interface RefreshRepository extends JpaRepository<RefreshToken, Long> {
+    Boolean existsByUsercd(String usercd);
+
     Boolean existsByToken(String token);
+
+    @Transactional
+    void deleteByUsercd(String usercd);
 
     @Transactional
     void deleteByToken(String token);

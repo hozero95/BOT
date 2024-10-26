@@ -2,6 +2,7 @@ package com.example.bot.core.security.filter;
 
 import com.example.bot.biz.entity.User;
 import com.example.bot.biz.repository.AuthRepository;
+import com.example.bot.biz.repository.RefreshRepository;
 import com.example.bot.core.config.RequestMatcherHolder;
 import com.example.bot.core.config.ResponseResult;
 import com.example.bot.core.security.util.CustomUserDetails;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -23,6 +25,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * JWT Filter
@@ -32,10 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthRepository authRepository;
+    private final RefreshRepository refreshRepository;
 
-    public JwtFilter(JwtUtil jwtUtil, AuthRepository authRepository) {
+    public JwtFilter(JwtUtil jwtUtil, AuthRepository authRepository, RefreshRepository refreshRepository) {
         this.jwtUtil = jwtUtil;
         this.authRepository = authRepository;
+        this.refreshRepository = refreshRepository;
     }
 
     /**
@@ -53,12 +58,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String accessToken = request.getHeader("Access-Token");
 
         // 토큰 유무 검증
-        if (accessToken == null) {
+        if (accessToken == null || accessToken.isEmpty()) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "access token is empty")).getBytes());
             response.setStatus(401);
-//            filterChain.doFilter(request, response); // 다음 필터 진행
             return;
         }
 
@@ -73,10 +77,9 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Access Token 맞는지 확인
-        String category = jwtUtil.getCategory(accessToken);
-
-        if (!category.equals("Access-Token")) {
+        // Token Category 맞는지 확인
+        String accessCategory = jwtUtil.getCategory(accessToken);
+        if (!accessCategory.equals("Access-Token")) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "access token is invalid")).getBytes());
@@ -84,9 +87,65 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰에서 username, role 획득
+        // Access 토큰이 만료 직전일 때 갱신
+        if (isAccessTokenExpiringSoon(accessToken)) {
+            // Cookie 에서 refresh 토큰 조회
+            String refreshToken = null;
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Refresh-Token")) {
+                    refreshToken = cookie.getValue();
+                }
+            }
+
+            // 토큰 유무 검증
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "refresh token is empty")).getBytes());
+                response.setStatus(401);
+                return;
+            }
+
+            // 토큰 만료 검증 => 다음 필터 진행하지 않음
+            try {
+                jwtUtil.isExpired(refreshToken);
+            } catch (ExpiredJwtException e) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "refresh token is expired")).getBytes());
+                response.setStatus(401);
+                return;
+            }
+
+            // Token Category 맞는지 확인
+            String refreshCategory = jwtUtil.getCategory(refreshToken);
+            if (!refreshCategory.equals("Access-Token")) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "refresh token is invalid")).getBytes());
+                response.setStatus(401);
+                return;
+            }
+
+            // Refresh 토큰이 DB에 저장되어 있는지 확인
+            Boolean isExist = refreshRepository.existsByToken(refreshToken);
+            if (!isExist) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofFailure(HttpStatus.UNAUTHORIZED, "refresh token is not exist")).getBytes());
+                response.setStatus(401);
+                return;
+            }
+
+            String username = jwtUtil.getUsername(refreshToken);
+            String role = jwtUtil.getRole(refreshToken);
+            String newAccess = jwtUtil.createJwt("Access-Token", username, role, JwtUtil.ACCESS_TOKEN_EXPIRE);
+            response.setHeader("Access-Token", newAccess);
+        }
+
+        // 토큰에서 username 획득
         String username = jwtUtil.getUsername(accessToken);
-//        String role = jwtUtil.getRole(accessToken);
 
         // User 객체 생성
         User user = new User();
@@ -115,5 +174,16 @@ public class JwtFilter extends OncePerRequestFilter {
         String[] excludePath = StringUtils.stringListRemoveSuffix(requestMatcherHolder.getPERMIT_ALL_URLS(), "**").toArray(new String[0]);
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
+    }
+
+    /**
+     * Token 만료시간이 5분 이하로 남았는지 확인하는 메소드
+     *
+     * @param token p1
+     * @return boolean
+     */
+    private boolean isAccessTokenExpiringSoon(String token) {
+        Date expirationDate = jwtUtil.isExpired(token);
+        return expirationDate.getTime() - System.currentTimeMillis() < 5 * 60 * 1000;
     }
 }

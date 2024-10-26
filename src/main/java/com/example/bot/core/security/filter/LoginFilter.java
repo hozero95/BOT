@@ -1,6 +1,6 @@
 package com.example.bot.core.security.filter;
 
-import com.example.bot.biz.dto.LoginDTO;
+import com.example.bot.biz.dto.auth.LoginDTO;
 import com.example.bot.core.config.ResponseResult;
 import com.example.bot.core.security.util.CustomUserDetails;
 import com.example.bot.core.security.util.JwtUtil;
@@ -51,12 +51,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
         // JSON Method
-        LoginDTO loginDTO;
+        LoginDTO.Request loginDTO;
 
         try {
             ServletInputStream inputStream = req.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            loginDTO = objectMapper.readValue(messageBody, LoginDTO.class);
+            loginDTO = objectMapper.readValue(messageBody, LoginDTO.Request.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -106,7 +106,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         res.setCharacterEncoding("UTF-8");
         res.getOutputStream().write(objectMapper.writeValueAsString(ResponseResult.ofSuccess("로그인 성공", null)).getBytes());
         res.setHeader("Access-Token", accessToken);
-        res.addCookie(jwtUtil.createCookie(refreshToken));
+        res.addCookie(jwtUtil.createRefreshCookie(refreshToken));
         res.setStatus(HttpStatus.OK.value());
 
         log.debug("로그인 성공: {} {}", username, role);

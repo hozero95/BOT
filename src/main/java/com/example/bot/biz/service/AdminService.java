@@ -1,6 +1,6 @@
 package com.example.bot.biz.service;
 
-import com.example.bot.biz.dto.JoinDTO;
+import com.example.bot.biz.dto.admin.SignupDTO;
 import com.example.bot.biz.entity.Auth;
 import com.example.bot.biz.entity.User;
 import com.example.bot.biz.repository.AuthRepository;
@@ -35,12 +35,12 @@ public class AdminService {
     /**
      * 회원 가입
      *
-     * @param joinDTO p1
+     * @param signupDTO p1
      */
-    public void signup(JoinDTO joinDTO) {
-        String usernm = joinDTO.getUsernm();
+    public void signup(SignupDTO.Request signupDTO) {
+        String usernm = signupDTO.getUsernm();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime birthdate = LocalDateTime.parse(joinDTO.getBirthdate() + " 00:00:00", formatter);
+        LocalDateTime birthdate = LocalDateTime.parse(signupDTO.getBirthdate() + " 00:00:00", formatter);
 
         // usercd 생성
         String year = Integer.toString(LocalDate.now().getYear());
