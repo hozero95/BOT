@@ -1,6 +1,3 @@
-# Custom Ignore
-*application.yml
-
 # Basic Ignore
 HELP.md
 .gradle
@@ -39,6 +36,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Custom Ignore
+application.yml
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,linux,java,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,java,intellij
